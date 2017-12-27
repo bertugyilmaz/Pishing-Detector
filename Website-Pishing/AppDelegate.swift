@@ -12,10 +12,26 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var navController: UINavigationController!
+    var navbarAppearance = UINavigationBar.appearance()
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        UIApplication.shared.statusBarStyle = .lightContent
+        navbarAppearance.tintColor = UIColor.white
+        navbarAppearance.barStyle = .blackTranslucent
+        navbarAppearance.shadowImage = UIImage()
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "MainViewController")
+        
+        navController = UINavigationController(rootViewController: vc)
+        
+        let frame = UIScreen.main.bounds
+        window = UIWindow(frame: frame)
+        
+        window?.rootViewController = navController
+        window?.makeKeyAndVisible()
         return true
     }
 
