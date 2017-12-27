@@ -16,3 +16,6 @@ let HEADERS = [
 
 let BASE_URL = "https://ussouthcentral.services.azureml.net/workspaces/be26e079e9134b5ea9605fc6bfc5fc48/services/d5acb9df8cc14848a6df486f9ff6a2b1/execute?api-version=2.0&format=swagger"
 
+let YES = "1"
+let NO = "0"
+let MAYBE = "-1"

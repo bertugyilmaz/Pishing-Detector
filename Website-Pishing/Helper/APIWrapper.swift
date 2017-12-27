@@ -12,7 +12,7 @@ import Alamofire
 class APIWrapper {
     static let sharedInstance = APIWrapper()
     
-    func request(body: [String: AnyObject],completion: @escaping (_ result: Bool, _ response: [String: AnyObject]?, _ error: Error?) -> ()){
+    func request(body: Parameters,completion: @escaping (_ result: Bool, _ response: [String: AnyObject]?, _ error: Error?) -> ()){
         Alamofire.request(BASE_URL, method: .post, parameters: body, encoding: JSONEncoding.default, headers: HEADERS).responseJSON { (response) in
             if let err = response.error {
                 completion(false,nil,err)
