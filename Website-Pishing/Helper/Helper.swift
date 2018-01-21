@@ -10,12 +10,13 @@ import Foundation
 import UIKit
 
 class Helper {
-    static func showAlertView(title: String, message: String) -> UIAlertController{
+    static func showAlertView(title: String, message: String){
         let alertView = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         let okButton = UIAlertAction(title: "OK", style: .cancel, handler: nil)
         
         alertView.addAction(okButton)
-        return alertView
+        
+        UIApplication.topViewController()?.present(alertView, animated: true, completion: nil)
     }
 }
