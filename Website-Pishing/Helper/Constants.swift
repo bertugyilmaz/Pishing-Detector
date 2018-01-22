@@ -19,3 +19,5 @@ let BASE_URL = "https://ussouthcentral.services.azureml.net/workspaces/be26e079e
 let YES = "1"
 let NO = "0"
 let MAYBE = "-1"
+
+let NOTIFICATION_OK_CLICK = "notification_ok_click"

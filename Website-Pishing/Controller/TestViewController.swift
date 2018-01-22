@@ -12,7 +12,8 @@ class TestViewController: UIViewController {
     
     var data: DataModel = DataModel()
     var index: Int!
-    var selected: Int!
+    var selected: Int = 0
+    var rowOfPicker: Int = 0
     let cellArr = ["Server From Handler",
                    "Pop-Up Window",
                    "SSL Final State",
@@ -36,36 +37,55 @@ class TestViewController: UIViewController {
         self.tableView.dataSource = self
         
         self.finishButton.addTarget(self, action: #selector(finishButtonAction(sender:)), for: .touchUpInside)
+        NotificationCenter.default.addObserver(self, selector: #selector(okButtonActionOnToolbar(notification:)), name: NSNotification.Name(rawValue: NOTIFICATION_OK_CLICK), object: nil)
     }
     
    @objc func finishButtonAction(sender: UIButton){
         let parameters = self.data.exportParameters()
-        print(parameters)
-  
-        APIWrapper.sharedInstance.request(body: parameters) { (result, response, err) in
-            if err != nil{
-                print(err!)
-                return
-            }
-            
+    
+        APIWrapper.sharedInstance.request(body: parameters) { (result, response) in
             if result {
                 print(response!)
-                if let result = response!["Results"] as? [String: AnyObject]{
-                    for i in result.values {
-                        if let arr = i as? NSArray {
-                            if let dict = arr[0] as? [String: AnyObject] {
-                                print(dict["Scored Labels"])
-                                print(dict["Scored Probabilities"])
-                                
-                                self.present(Helper.showAlertView(title:"Scored Label: \(dict["Scored Labels"] as! String)" , message: "Scored Probabilities: \(dict["Scored Probabilities"] as! String)"), animated: true, completion: nil)
-                            }
+                for i in (response?.values)! {
+                    if let arr = i as? NSArray {
+                        if let dict = arr[0] as? [String: AnyObject] {
+//                            print(dict["Scored Labels"])
+//                            print(dict["Scored Probabilities"])
+                            Helper.showAlertView(title:"Scored Label: \(dict["Scored Labels"] as! String)" , message: "Scored Probabilities: \(dict["Scored Probabilities"] as! String)")
                         }
                     }
                 }
             }
         }
     }
-
+    
+    @objc func okButtonActionOnToolbar(notification: Notification){
+        let indexPaths = IndexPath(row: self.selected, section: 0)
+        let cell = tableView.cellForRow(at: indexPaths) as! PickerTableViewCell
+        
+        switch self.selected {
+        case 0:
+            data.sfh = cell.pickerTextField.text
+        case 1:
+            data.popUpWindow = cell.pickerTextField.text!
+        case 2:
+            data.sslFinalState = cell.pickerTextField.text!
+        case 3:
+            data.request_url = cell.pickerTextField.text!
+        case 4:
+            data.urlOfAnchor = cell.pickerTextField.text!
+        case 5:
+            data.webTraffic = cell.pickerTextField.text!
+        case 6:
+            data.urlLength = cell.pickerTextField.text!
+        case 7:
+            data.ageOfDomain = cell.pickerTextField.text!
+        case 8:
+            data.havingIpAdress = cell.pickerTextField.text!
+        default:
+            print("something went wrong")
+        }
+    }
 }
 extension TestViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -88,6 +108,9 @@ extension TestViewController: UITableViewDataSource, UITableViewDelegate {
 extension TestViewController: UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         self.selected = textField.tag
+        
+        textField.text = YES
+        
         if textField.tag == 7 {
             self.index = 1
         }else if textField.tag == 8 {
@@ -108,42 +131,23 @@ extension TestViewController: UITextFieldDelegate, UIPickerViewDataSource, UIPic
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         let arr = self.pickerArr[self.index][row]
+        
         return arr
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         var values = ""
+        let indexPaths = IndexPath(row: self.selected, section: 0)
+        let cell = tableView.cellForRow(at: indexPaths) as! PickerTableViewCell
         
         if row == 0 {
             values = YES
-        }else if row == 1 {
+        }else if row == 1 && self.selected != 8{
             values = NO
         }else {
             values = MAYBE
         }
         
-        switch self.selected {
-        case 0:
-            print(values)
-           data.sfh = values
-        case 1:
-            data.popUpWindow = values
-        case 2:
-            data.sslFinalState = values
-        case 3:
-            data.request_url = values
-        case 4:
-            data.urlOfAnchor = values
-        case 5:
-            data.webTraffic = values
-        case 6:
-            data.urlLength = values
-        case 7:
-            data.ageOfDomain = values
-        case 8:
-            data.havingIpAdress = values
-        default:
-            print("something went wrong")
-        }
+        cell.pickerTextField.text = values
     }
 }

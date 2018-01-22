@@ -51,6 +51,7 @@ class PickerTextfield: UITextField {
     }
     
     @objc func donePicker(_ sender: UIBarButtonItem) -> Bool {
+        NotificationCenter.default.post(name: Notification.Name(NOTIFICATION_OK_CLICK), object: nil)
         self.resignFirstResponder()
         return true
     }
