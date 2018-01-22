@@ -8,19 +8,24 @@
 
 import Foundation
 import Alamofire
+import UIKit
 
 class APIWrapper {
     static let sharedInstance = APIWrapper()
     
-    func request(body: Parameters,completion: @escaping (_ result: Bool, _ response: [String: AnyObject]?, _ error: Error?) -> ()){
+    func request(body: Parameters,completion: @escaping (_ result: Bool, _ response: [String: AnyObject]?) -> ()){
         Alamofire.request(BASE_URL, method: .post, parameters: body, encoding: JSONEncoding.default, headers: HEADERS).responseJSON { (response) in
-            if let err = response.error {
-                completion(false,nil,err)
-            }
             
             if let json = response.result.value {
                 if let dict = json as? [String: AnyObject] {
-                    completion(true, dict,nil)
+                    if let result = dict["Results"] as? [String: AnyObject]{
+                        completion(true, result)
+                    }else {
+                        if let error = dict["error"] as? [String:AnyObject]{
+                            Helper.showAlertView(title:"" , message: error["message"] as! String)
+                            completion(false,nil)
+                        }
+                    }
                 }
             }
         }
